@@ -11,7 +11,6 @@ app.use(express.static("."));
 let tasks = [];
 
 io.on("connection", (socket) => {
-    // Отправляем текущий список при подключении
     socket.emit("update", tasks);
 
     socket.on("add", (data) => {
@@ -21,9 +20,9 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("delete", (data) => {
-        if (data && typeof data.index === "number") {
-            tasks.splice(data.index, 1);
+    socket.on("delete", (i) => {
+        if (typeof i == "number") {
+            tasks.splice(i, 1);
             io.emit("update", tasks);
         }
     });

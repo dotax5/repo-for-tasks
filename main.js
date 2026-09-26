@@ -5,22 +5,26 @@ const tasksDiv = document.querySelector(".tasks");
 
 socket.on("update", (tasks) => {
     tasksDiv.innerHTML = "";
-    tasks.forEach((task, index) => {
+    tasks.forEach((task) => {
         const div = document.createElement("div");
         div.textContent = task;
-        div.style.cursor = "pointer";
-        div.style.margin = "5px 0";
-        div.onclick = () => {
-            socket.emit("delete", { index });
-        };
         tasksDiv.appendChild(div);
     });
+});
+
+tasksDiv.addEventListener("click", (e) => {
+    const tasksList = Array.from(tasksDiv.children);
+    const index = tasksList.indexOf(e.target);
+
+    if (index !== -1) {
+        socket.emit("delete", index);
+    }
 });
 
 btn.addEventListener("click", () => {
     const text = input.value.trim();
     if (text) {
-        socket.emit("add", { text });
+        socket.emit("add", {text});
         input.value = "";
     }
 });
