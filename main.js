@@ -1,16 +1,54 @@
 const pole = document.querySelector(".pole")
 const ships_container = document.querySelector(".ships-container")
+const field = Array.from({ length: 10 }, () => Array(10).fill(0));
 
 for (let i = 0; i < 100; i++) {
     pole.insertAdjacentHTML("beforeend", `<div class="ceil" id="${i}">`)
+
 }
+
 
 
 const ships = document.querySelectorAll(".x2, .x3, .x4")
 
 dct = {}
-
 ships.forEach(e => { dct[e] = [e.getBoundingClientRect().x, e.getBoundingClientRect().y] });
+
+function to_mass(ship, size, course, ceil) {
+    const ceil_x = ceil.id % 10
+    const ceil_y = Math.trunc(ceil.id / 10);
+    if (course === "right") {
+        if (ceil_x + size <= 10) {
+            for (let i = 0; i < size; i++) {
+                field[ceil_y][ceil_x+i] = 1
+            }
+        } else {return false}
+    }
+    if (course === "left") {
+        if (ceil_x - size >= -1) {
+            for (let i = 0; i < size; i++) {
+                field[ceil_y][ceil_x-i] = 1
+            }
+        } else {return false}
+    }
+    if (course === "down") {
+        if (ceil_y + size <= 10) {
+            for (let i = 0; i < size; i++) {
+                field[ceil_x][ceil_y+i] = 1
+            }
+        } else {return false}
+    }
+    if (course === "up") {
+        if (ceil_x - size >= -1) {
+            for (let i = 0; i < size; i++) {
+                field[ceil_x][ceil_y-i] = 1
+            }
+        } else {return false}
+    }
+    return true
+
+
+}
 
 ships.forEach(ship => {
     ship.addEventListener("mousedown", (e) => {
@@ -24,8 +62,8 @@ ships.forEach(ship => {
         }
 
         let angle = Number((ship.style.rotate).replace(/\D/g, ''));
-        let shiftX = e.clientX - ship.getBoundingClientRect().left;
-        let shiftY = e.clientY - ship.getBoundingClientRect().top;
+        let course = "right"
+
 
         ship.style.position = "absolute";
         ship.style.zIndex = 2;
@@ -40,6 +78,19 @@ ships.forEach(ship => {
         function rotate(e) {
             if (e.code !== "KeyR" && /^x[1-4]$/.test(e.className)) return;
             angle += 90;
+            if (angle >= 360) {
+                course = "right";
+                angle = 0
+            }
+            if (angle === 90) {
+                course = "down";
+            }
+            if (angle === 180) {
+                course = "left";
+            }
+            if (angle === 270) {
+                course = "up";
+            }
             ship.style.rotate = angle + "deg";
         }
 
@@ -61,35 +112,19 @@ ships.forEach(ship => {
             ship.style.display = "";
 
 
+            if (!targetElement || !targetElement.classList.contains("ceil")) {
+                ships_home();
+                return
+            }
             const ceilRect = targetElement.getBoundingClientRect();
             ship.style.left = `${ceilRect.left}px`;
             ship.style.top = `${ceilRect.top}px`;
 
-            const rect_ship = ship.getBoundingClientRect();
-            // let rect_for_check = {}
-            // for (let i = 0; i < rect_ship.x/40; i++) {
-            //     rect_for_check[`x${i}`] = [rect_ship.left + 20*i, rect_ship]
-
-            // }
-            const x1 = rect_ship.left + 5;
-            const y1 = rect_ship.top + 5;
-
-            const x2 = rect_ship.right - 5;
-            const y2 = rect_ship.top + 5;
-
-            const x3 = rect_ship.left + 5;
-            const y3 = rect_ship.bottom - 5;
-            ship.style.display = "none"
-            const edge_1 = document.elementFromPoint(x1, y1);
-            const edge_2 = document.elementFromPoint(x2, y2);
-            const edge_3 = document.elementFromPoint(x3, y3);
-            const isEdge1Valid = edge_1.classList.contains("ceil");
-            const isEdge2Valid = edge_2.classList.contains("ceil");
-            const isEdge3Valid = edge_3.classList.contains("ceil");
-            if (!isEdge1Valid || !isEdge2Valid || !isEdge3Valid) {
+            const size = +ship.className.at(-1)
+            if (!to_mass(ship, size, course, targetElement)) {
                 ships_home();
             }
-            ship.style.display = "";
+
         }
 
 

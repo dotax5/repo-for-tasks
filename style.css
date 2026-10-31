@@ -18,8 +18,8 @@ body {
     grid-template-rows: repeat(10, 40px);
 
     .ceil {
-        background-color: #222;
-        border: 1px solid #555;
+        background-color: grey;
+        border: 1px solid dimgrey;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -28,7 +28,7 @@ body {
 }
 
 
-.x3 {
+.x1 {
     width: 40px;
     height: 40px;
     background-color: red;
@@ -40,7 +40,7 @@ body {
     background-color: white;
 }
 
-.x4 {
+.x3 {
     width: 120px;
     height: 40px;
     background-color: blue;
@@ -61,6 +61,6 @@ body {
     touch-action: none;
 }
 
-.x2:active, .x3:active, .x4:active {
+.x1:active, .x2:active, .x3:active, .x4:active {
     cursor: grabbing;
 }
