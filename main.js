@@ -9,10 +9,20 @@ for (let i = 0; i < 100; i++) {
 
 
 
-const ships = document.querySelectorAll(".x2, .x3, .x4")
+const ships = document.querySelectorAll(".x1, .x2, .x3, .x4")
 
 dct = {}
 ships.forEach(e => { dct[e] = [e.getBoundingClientRect().x, e.getBoundingClientRect().y] });
+
+function render() {
+    for (let i = 0; i < 100; i++) {
+        const now_ceil = document.getElementById(String(i))
+        const x = now_ceil.getBoundingClientRect().x
+        const y = now_ceil.getBoundingClientRect().y
+        element = document.elementFromPoint(x, y)
+        
+    }
+}
 
 function to_mass(ship, size, course, ceil) {
     const ceil_x = ceil.id % 10
@@ -20,32 +30,57 @@ function to_mass(ship, size, course, ceil) {
     if (course === "right") {
         if (ceil_x + size <= 10) {
             for (let i = 0; i < size; i++) {
-                field[ceil_y][ceil_x+i] = 1
+                if (field[ceil_y][ceil_x+i] !== 0) {
+                    return false
+                }
+            }
+            for (let i = 0; i < size; i++) {
+                field[ceil_y][ceil_x+i] = ship.className
             }
         } else {return false}
     }
+
     if (course === "left") {
         if (ceil_x - size >= -1) {
             for (let i = 0; i < size; i++) {
-                field[ceil_y][ceil_x-i] = 1
+                if (field[ceil_y][ceil_x-i] !== 0) {
+                    return false
+                }
+            }
+            for (let i = 0; i < size; i++) {
+                field[ceil_y][ceil_x-i] = ship.className
             }
         } else {return false}
     }
+
     if (course === "down") {
         if (ceil_y + size <= 10) {
             for (let i = 0; i < size; i++) {
-                field[ceil_x][ceil_y+i] = 1
+                if (field[ceil_y + i][ceil_x] !== 0) {
+                    return false
+                }
             }
-        } else {return false}
-    }
-    if (course === "up") {
-        if (ceil_x - size >= -1) {
             for (let i = 0; i < size; i++) {
-                field[ceil_x][ceil_y-i] = 1
+                field[ceil_y+i][ceil_x] = ship.className
             }
         } else {return false}
     }
+
+    if (course === "up") {
+        if (ceil_y - size >= -1) {
+            for (let i = 0; i < size; i++) {
+                if (field[ceil_y-i][ceil_x] !== 0) {
+                    return false
+                }
+            }
+            for (let i = 0; i < size; i++) {
+                field[ceil_y-i][ceil_x] = ship.className
+            }
+        } else {return false}
+    }
+    console.log(field);
     return true
+    
 
 
 }
@@ -111,7 +146,7 @@ ships.forEach(ship => {
             const targetElement = document.elementFromPoint(e.clientX, e.clientY);
             ship.style.display = "";
 
-
+            
             if (!targetElement || !targetElement.classList.contains("ceil")) {
                 ships_home();
                 return
